@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ElementFilter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0f12;
+      --surface: #151821;
+      --border: #252a35;
+      --accent: #c8974a;
+      --accent2: #7c6fcd;
+      --danger: #c0392b;
+      --text: #d4d8e2;
+      --muted: #5a6070;
+      --mono: 'Share Tech Mono', monospace;
+      --sans: 'Barlow', sans-serif;
+      --radius: 4px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 340px;
+      min-height: 400px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 13px;
+    }
+
+    /* ---- Header ---- */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent), #8b5e2a);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-family: var(--mono);
+      font-size: 14px;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+    }
+
+    .logo-sub {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 1px;
+      font-family: var(--mono);
+      letter-spacing: 0.08em;
+    }
+
+    /* Toggle */
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .toggle-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    .toggle {
+      position: relative;
+      width: 38px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .toggle input {
+      display: none;
+    }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--border);
+      border-radius: 20px;
+      transition: background 0.2s;
+      border: 1px solid var(--muted);
+    }
+
+    .toggle input:checked+.toggle-track {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      z-index: 1;
+    }
+
+    .toggle input:checked~.toggle-thumb {
+      transform: translateX(18px);
+    }
+
+    /* ---- Stats bar ---- */
+    .stats-bar {
+      padding: 8px 16px;
+      background: #0a0c0f;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .stat-dot.zero {
+      background: var(--muted);
+    }
+
+    .stat-text {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .stat-count {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-left: auto;
+    }
+
+    .stat-count.zero {
+      color: var(--muted);
+    }
+
+    /* ---- Mode selector ---- */
+    .section {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .mode-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .mode-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .mode-btn.active {
+      border-color: var(--accent);
+      background: rgba(200, 151, 74, 0.12);
+      color: var(--accent);
+    }
+
+    .mode-icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    /* ---- Keywords ---- */
+    .kw-section {
+      padding: 12px 16px;
+    }
+
+    .kw-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .kw-count {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1px 8px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .kw-input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 7px 10px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .kw-input:focus {
+      border-color: var(--accent);
+    }
+
+    .kw-input::placeholder {
+      color: var(--muted);
+    }
+
+    .add-btn {
+      background: var(--accent);
+      color: #1a0f00;
+      border: none;
+      border-radius: var(--radius);
+      padding: 7px 12px;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1;
+      transition: opacity 0.15s;
+      display: flex;
+      align-items: center;
+    }
+
+    .add-btn:hover {
+      opacity: 0.85;
+    }
+
+    .add-btn:active {
+      opacity: 0.7;
+    }
+
+    /* Keyword list */
+    .kw-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .kw-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .kw-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .kw-list::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    .kw-tag {
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px 10px 8px;
+      gap: 6px;
+      animation: slideIn 0.15s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .kw-tag-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .kw-tag-icon {
+      font-size: 10px;
+      color: var(--accent2);
+      flex-shrink: 0;
+    }
+
+    .kw-tag-text {
+      flex: 1;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+      word-break: break-all;
+    }
+
+    .kw-remove {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      padding: 0 2px;
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .kw-remove:hover {
+      color: var(--danger);
+    }
+
+    /* Per-keyword radius slider */
+    .kw-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding-left: 2px;
+    }
+
+    .kw-slider-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      flex-shrink: 0;
+      width: 30px;
+    }
+
+    .kw-radius-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .kw-radius-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+      cursor: pointer;
+      box-shadow: 0 0 5px rgba(200, 151, 74, 0.4);
+      transition: transform 0.1s;
+    }
+
+    .kw-radius-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.25);
+      box-shadow: 0 0 8px rgba(200, 151, 74, 0.7);
+    }
+
+    .kw-radius-badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(200, 151, 74, 0.12);
+      border: 1px solid rgba(200, 151, 74, 0.3);
+      border-radius: 3px;
+      padding: 0 5px;
+      min-width: 26px;
+      text-align: center;
+      flex-shrink: 0;
+      transition: color 0.15s, background 0.15s, border-color 0.15s;
+    }
+
+    .kw-radius-badge.zero {
+      color: var(--muted);
+      background: transparent;
+      border-color: var(--border);
+    }
+
+    .kw-empty {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      padding: 16px 0 8px;
+      opacity: 0.7;
+    }
+
+    /* Disabled state */
+    body.disabled .section,
+    body.disabled .kw-section {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    /* Footer */
+    footer {
+      padding: 8px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .clear-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: var(--radius);
+      padding: 4px 10px;
+      font-family: var(--mono);
+      font-size: 10px;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      transition: all 0.15s;
+    }
+
+    .clear-btn:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">⚔</div>
+      <div>
+        <div class="logo-text">ElementFilter</div>
+        <div class="logo-sub">WEB CONTENT FILTER</div>
+      </div>
+    </div>
+    <div class="toggle-wrap">
+      <span class="toggle-label" id="toggle-state-label">ON</span>
+      <label class="toggle">
+        <input type="checkbox" id="main-toggle" checked />
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat-dot" id="stat-dot"></div>
+    <span class="stat-text">elements filtered on this page</span>
+    <span class="stat-count" id="stat-count">0</span>
+  </div>
+
+  <div class="section">
+    <div class="section-label">// Filter mode</div>
+    <div class="mode-grid">
+      <button class="mode-btn active" data-mode="hide">
+        <span class="mode-icon">🚫</span>
+        Hide
+      </button>
+      <button class="mode-btn" data-mode="blur">
+        <span class="mode-icon">👁</span>
+        Blur
+      </button>
+      <button class="mode-btn" data-mode="strikethrough">
+        <span class="mode-icon">✂️</span>
+        Strike
+      </button>
+    </div>
+  </div>
+
+  <div class="kw-section">
+    <div class="kw-header">
+      <div class="section-label" style="margin:0">// Keywords</div>
+      <span class="kw-count" id="kw-count">0 filters</span>
+    </div>
+    <div class="input-row">
+      <input class="kw-input" id="kw-input" type="text" placeholder="e.g. Trump, Claude, AI, spoiler..." maxlength="80"
+        autocomplete="off" spellcheck="false" />
+      <button class="add-btn" id="add-btn" title="Add (Enter)">+</button>
+    </div>
+    <div class="kw-list" id="kw-list">
+      <div class="kw-empty" id="kw-empty">no active filters</div>
+    </div>
+  </div>
+
+  <footer>
+    <button class="clear-btn" id="clear-all-btn">clear all</button>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>

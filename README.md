@@ -4,7 +4,7 @@ A Chrome extension that lets you hide, blur, or strike through any web content b
 
 Originally built to filter Path of Exile build indexes, but works on **any website**.
 
-![ElementFilter popup](https://raw.githubusercontent.com/YOUR_USERNAME/element-filter/main/screenshot.png)
+![ElementFilter popup](https://raw.githubusercontent.com/YOUR_USERNAME/element-filter/screenshot.png)
 
 ---
 
